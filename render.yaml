@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: ai-ans
+    runtime: python
+    plan: 0.5c-512mb
+    buildCommand: python -m pip install -r backend/requirements.txt && npm --prefix frontend ci && npm --prefix frontend run build
+    startCommand: python -m uvicorn app.main:app --app-dir backend --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    disk:
+      name: ai-ans-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: GEMINI_MODEL
+        value: gemini-3.5-flash-lite
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: AI_ANS_SERVER_PROVIDER_EMAIL
+        sync: false
+      - key: CREDENTIAL_ENCRYPTION_KEY
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: AI_ANS_SERVE_FRONTEND
+        value: "true"
+      - key: AI_ANS_DATA_DIR
+        value: /var/data
